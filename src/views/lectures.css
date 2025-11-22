@@ -1,0 +1,343 @@
+/* Lectures Page - Material 3 Expressive - Rose Dark Theme */
+
+.lectures-page {
+  min-height: calc(100vh - 80px);
+  background: var(--color-surface);
+  position: relative;
+  width: 100%;
+}
+
+.lectures-container {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  position: relative;
+  z-index: 1;
+}
+
+/* Header - Centered Hero Style */
+.lectures-header {
+  text-align: center;
+  margin-bottom: var(--spacing-3xl);
+  padding: var(--spacing-2xl) 0;
+  border-bottom: 1px solid var(--color-outline-variant);
+  position: relative;
+}
+
+.lectures-header h1 {
+  font-family: var(--font-family-display);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+/* Lecture Cards Grid */
+.lectures-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+  animation: fadeInScale 0.8s var(--animation-curve-standard) 0.2s both;
+}
+
+/* Card Wrapper for positioning delete button */
+.lecture-card-wrapper {
+  position: relative;
+}
+
+.lecture-card {
+  background: var(--color-surface-container);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-lg);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  transition: all 0.3s var(--animation-curve-standard);
+  border: 1px solid transparent;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.lecture-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-tertiary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lecture-card:hover {
+  background: var(--color-surface-container-high);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-level-2);
+  border-color: var(--color-outline-variant);
+}
+
+.lecture-card:hover::before {
+  opacity: 1;
+}
+
+.lecture-card h3 {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-title-lg);
+  font-weight: 500;
+  margin: 0;
+  color: var(--color-on-surface);
+  transition: color var(--animation-duration-short);
+}
+
+.lecture-card:hover h3 {
+  color: var(--color-primary);
+}
+
+.lecture-card p {
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-body-md);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* AI Badge */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-body-sm);
+  color: var(--color-tertiary);
+  margin-top: auto;
+  padding-top: var(--spacing-sm);
+}
+
+.ai-badge .material-icons {
+  font-size: 16px;
+}
+
+/* Delete Button */
+.lecture-delete-btn {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--border-radius-full);
+  background: var(--color-error-container);
+  color: var(--color-on-error-container);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  transition: all var(--animation-duration-short) var(--animation-curve-standard);
+  opacity: 0;
+  z-index: 10;
+}
+
+.lecture-card-wrapper:hover .lecture-delete-btn {
+  opacity: 1;
+}
+
+.lecture-delete-btn:hover {
+  background: var(--color-error);
+  color: var(--color-on-error);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-level-1);
+}
+
+.lecture-delete-btn:active {
+  transform: scale(0.95);
+}
+
+/* Floating Action Button (FAB) */
+.fab-add {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--border-radius-xl);
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+  font-size: 24px;
+  border: none;
+  box-shadow: var(--shadow-level-3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--animation-duration-standard) var(--animation-curve-standard);
+  z-index: 100;
+  animation: fadeInScale 0.6s var(--animation-curve-standard) 0.4s both;
+}
+
+.fab-add:hover {
+  box-shadow: var(--shadow-level-4);
+  transform: scale(1.05);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.fab-add:active {
+  transform: scale(0.95);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s var(--animation-curve-standard);
+}
+
+.modal-content {
+  background: var(--color-surface-container-high);
+  padding: var(--spacing-2xl);
+  border-radius: var(--border-radius-xl);
+  max-width: 400px;
+  width: 90%;
+  box-shadow: var(--shadow-level-3);
+  text-align: center;
+  border: 1px solid var(--color-outline-variant);
+  animation: scaleIn 0.4s var(--animation-curve-standard);
+}
+
+.modal-content h2 {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-on-surface);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-headline-sm);
+  font-weight: 400;
+}
+
+.modal-content p {
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-on-surface-variant);
+  font-size: var(--font-size-body-md);
+}
+
+.upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.upload-area label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 10px 24px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: var(--border-radius-full);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: var(--font-size-label-lg);
+  transition: all var(--animation-duration-short) var(--animation-curve-standard);
+  box-shadow: var(--shadow-level-1);
+}
+
+.upload-area label:hover {
+  background: color-mix(in srgb, var(--color-primary) 92%, var(--color-on-primary));
+  box-shadow: var(--shadow-level-2);
+  transform: translateY(-1px);
+}
+
+.upload-area input[type="file"] {
+  display: none;
+}
+
+.upload-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+}
+
+.upload-progress p {
+  color: var(--color-on-surface);
+  font-size: var(--font-size-body-md);
+  margin: 0;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+/* Danger Button */
+.btn-danger {
+  background: var(--color-error);
+  color: var(--color-on-error);
+}
+
+.btn-danger:hover {
+  background: var(--color-error-container);
+  color: var(--color-on-error-container);
+  box-shadow: var(--shadow-level-1);
+}
+
+/* Spinner */
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--color-surface-variant);
+  border-top: 4px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .lectures-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* New Lecture Button Positioning */
+.lectures-actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-3xl);
+  padding: 0 var(--spacing-lg);
+}
+
+.lectures-actions .btn {
+  padding: 1rem 2.5rem;
+  min-width: 220px;
+  font-size: var(--font-size-body-lg);
+  gap: var(--spacing-sm);
+}
