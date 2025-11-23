@@ -257,6 +257,26 @@ const LectureDetail = () => {
                       )
                     }
                     return <a href={href} {...props}>{children}</a>
+                  },
+                  p: ({ node, children, ...props }) => {
+                    const childArray = React.Children.toArray(children)
+                    const text = String(children)
+
+                    // Check if this paragraph contains a flashcard marker
+                    const hasQMarker = childArray.some(child =>
+                      child?.props?.className?.includes('marker-q')
+                    )
+                    const hasAMarker = childArray.some(child =>
+                      child?.props?.className?.includes('marker-a')
+                    )
+
+                    if (hasQMarker) {
+                      return <p className="flashcard-question" {...props}>{children}</p>
+                    }
+                    if (hasAMarker) {
+                      return <p className="flashcard-answer" {...props}>{children}</p>
+                    }
+
                     if (text.match(/Exam Tip|Remember|Focus on|Common mistake/i)) {
                       return <div className="exam-tip-box"><p className="notes-p" {...props}>{children}</p></div>
                     }
@@ -268,10 +288,10 @@ const LectureDetail = () => {
                   strong: ({ node, children, ...props }) => {
                     const text = String(children)
                     if (text === 'Q') {
-                      return <strong className="flashcard-marker marker-q" {...props}>{children}</strong>
+                      return <strong className="flashcard-marker marker-q" {...props}>Q:</strong>
                     }
                     if (text === 'A') {
-                      return <strong className="flashcard-marker marker-a" {...props}>{children}</strong>
+                      return <strong className="flashcard-marker marker-a" {...props}>A:</strong>
                     }
                     return <strong {...props}>{children}</strong>
                   },

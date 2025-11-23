@@ -10,10 +10,14 @@ const slides = [
 ]
 
 const Prototype = () => {
-  const [index, setIndex] = useState(0)
+  const [galleryIndex, setGalleryIndex] = useState(0)
+  const [stepsIndex, setStepsIndex] = useState(0)
 
-  function prev() { setIndex((i) => (i - 1 + slides.length) % slides.length) }
-  function next() { setIndex((i) => (i + 1) % slides.length) }
+  function prevGallery() { setGalleryIndex((i) => (i - 1 + slides.length) % slides.length) }
+  function nextGallery() { setGalleryIndex((i) => (i + 1) % slides.length) }
+
+  function prevStep() { setStepsIndex((i) => (i - 1 + 3) % 3) }
+  function nextStep() { setStepsIndex((i) => (i + 1) % 3) }
 
   return (
     <div className="proto-page noisy-bg">
@@ -52,13 +56,13 @@ const Prototype = () => {
                 <div className="carousel-section">
                   <h2 className="animate-fade-in-up delay-3">Gallery</h2>
                   <div className="carousel surface-card">
-                    <img src={slides[index]} alt={`slide-${index}`} className="carousel-image animate-fade-in" />
+                    <img src={slides[galleryIndex]} alt={`slide-${galleryIndex}`} className="carousel-image animate-fade-in" />
                     <div className="carousel-controls">
-                      <button onClick={prev} aria-label="Previous" className="carousel-btn button-ripple">
+                      <button onClick={prevGallery} aria-label="Previous" className="carousel-btn button-ripple">
                         <span className="material-icons">chevron_left</span>
                       </button>
-                      <span className="carousel-indicator">{index + 1} / {slides.length}</span>
-                      <button onClick={next} aria-label="Next" className="carousel-btn button-ripple">
+                      <span className="carousel-indicator">{galleryIndex + 1} / {slides.length}</span>
+                      <button onClick={nextGallery} aria-label="Next" className="carousel-btn button-ripple">
                         <span className="material-icons">chevron_right</span>
                       </button>
                     </div>
@@ -69,26 +73,44 @@ const Prototype = () => {
           </section>
 
 
-          {/* How It Works Section */}
-          <section className="proto-specs-section animate-fade-in-up">
+          {/* How It Works Section - Carousel */}
+          <section className="proto-specs-section">
             <h2 className="animate-fade-in-up delay-4">How It Works</h2>
-            <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', alignItems: 'stretch', maxWidth: '1200px', margin: '2rem auto' }}>
-              <div style={{ flex: 1, background: 'var(--color-surface-container)', borderRadius: 'var(--border-radius-xl)', padding: '2rem', textAlign: 'center', position: 'relative', border: '1px solid var(--color-outline-variant)' }}>
-                <div style={{ width: '48px', height: '48px', background: 'var(--color-primary-container)', color: 'var(--color-on-primary-container)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold', margin: '0 auto 1rem' }}>1</div>
-                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: 'var(--font-size-title-lg)', color: 'var(--color-on-surface)' }}>ESP32 Audio Capture</h3>
-                <p style={{ margin: 0, color: 'var(--color-on-surface-variant)' }}>Multi-speaker I2S microphone array captures classroom audio with precision.</p>
+
+            <div className="steps-carousel">
+              <div className="steps-carousel-container">
+                <div className="steps-carousel-track" style={{ transform: `translateX(-${stepsIndex * 100}%)` }}>
+                  {/* Step 1 */}
+                  <div className={`step-card ${stepsIndex === 0 ? 'active' : ''}`}>
+                    <div className="step-number">1</div>
+                    <h3>ESP32 Audio Capture</h3>
+                    <p>Multi-speaker I2S microphone array captures classroom audio with precision.</p>
+                  </div>
+
+                  {/* Step 2 */}
+                  <div className={`step-card ${stepsIndex === 1 ? 'active' : ''}`}>
+                    <div className="step-number">2</div>
+                    <h3>Whisper Transcription</h3>
+                    <p>On-device AI inference converts speech to text locally — privacy‑first.</p>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className={`step-card ${stepsIndex === 2 ? 'active' : ''}`}>
+                    <div className="step-number">3</div>
+                    <h3>Cloud Sync</h3>
+                    <p>Secure cloud storage and real‑time web access to transcripts.</p>
+                  </div>
+                </div>
               </div>
 
-              <div style={{ flex: 1, background: 'var(--color-surface-container)', borderRadius: 'var(--border-radius-xl)', padding: '2rem', textAlign: 'center', position: 'relative', border: '1px solid var(--color-outline-variant)' }}>
-                <div style={{ width: '48px', height: '48px', background: 'var(--color-primary-container)', color: 'var(--color-on-primary-container)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold', margin: '0 auto 1rem' }}>2</div>
-                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: 'var(--font-size-title-lg)', color: 'var(--color-on-surface)' }}>Whisper Transcription</h3>
-                <p style={{ margin: 0, color: 'var(--color-on-surface-variant)' }}>On-device AI inference converts speech to text locally — privacy‑first.</p>
-              </div>
-
-              <div style={{ flex: 1, background: 'var(--color-surface-container)', borderRadius: 'var(--border-radius-xl)', padding: '2rem', textAlign: 'center', border: '1px solid var(--color-outline-variant)' }}>
-                <div style={{ width: '48px', height: '48px', background: 'var(--color-primary-container)', color: 'var(--color-on-primary-container)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold', margin: '0 auto 1rem' }}>3</div>
-                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: 'var(--font-size-title-lg)', color: 'var(--color-on-surface)' }}>Cloud Sync</h3>
-                <p style={{ margin: 0, color: 'var(--color-on-surface-variant)' }}>Secure cloud storage and real‑time web access to transcripts.</p>
+              <div className="steps-carousel-controls">
+                <button onClick={prevStep} aria-label="Previous Step" className="carousel-btn button-ripple">
+                  <span className="material-icons">chevron_left</span>
+                </button>
+                <span className="carousel-indicator">{stepsIndex + 1} / 3</span>
+                <button onClick={nextStep} aria-label="Next Step" className="carousel-btn button-ripple">
+                  <span className="material-icons">chevron_right</span>
+                </button>
               </div>
             </div>
           </section>
