@@ -55,7 +55,7 @@ const Home = () => {
                 Captures lectures effortlessly. Never miss a key point again.
               </p>
               <div className="hero-ctas animate-fade-in-up stagger-4">
-                <a href="/prototype" className="btn btn-primary btn-lg button-ripple animate-pulse">
+                <a href="/prototype" className="btn btn-outline btn-lg button-ripple animate-pulse">
                   <span className="material-icons">play_arrow</span>
                   Try the Prototype
                 </a>

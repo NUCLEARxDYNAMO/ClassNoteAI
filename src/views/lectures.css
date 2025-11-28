@@ -341,3 +341,42 @@
   font-size: var(--font-size-body-lg);
   gap: var(--spacing-sm);
 }
+
+/* Recording Source Selector - Button Spacing */
+.recording-source-selector {
+  display: flex;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.recording-source-selector .btn {
+  min-width: 220px;
+}
+
+.esp32-option .material-icons {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 768px) {
+  .recording-source-selector {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .recording-source-selector .btn {
+    width: 100%;
+  }
+}

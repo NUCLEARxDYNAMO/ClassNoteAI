@@ -19,6 +19,34 @@ if (typeof window !== 'undefined' && !window.katex) {
   window.katex = katex
 }
 
+// Custom Image Component with Async Loading and Animation
+const ImageWithLoader = ({ src, alt, ...props }) => {
+  const [loaded, setLoaded] = useState(false)
+  const [error, setError] = useState(false)
+
+  return (
+    <span className="image-container" style={{ display: 'block' }}>
+      {!loaded && !error && <span className="image-skeleton" />}
+
+      {!error ? (
+        <img
+          src={src}
+          alt={alt}
+          className={`inline-lecture-image ${loaded ? 'loaded' : ''}`}
+          onLoad={() => setLoaded(true)}
+          onError={() => setError(true)}
+          loading="lazy"
+          {...props}
+        />
+      ) : (
+        <span className="image-error" style={{ display: 'flex' }}>
+          Failed to load image: {alt}
+        </span>
+      )}
+    </span>
+  )
+}
+
 const LectureDetail = () => {
   const { id } = useParams()
   const [note, setNote] = useState(null)
@@ -27,7 +55,10 @@ const LectureDetail = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState('')
   const [showTOC, setShowTOC] = useState(true)
-  const audioRef = useRef(null)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [activeSegmentIndex, setActiveSegmentIndex] = useState(-1)
+  const [audioElement, setAudioElement] = useState(null)
+  const transcriptRefs = useRef([])
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -46,9 +77,52 @@ const LectureDetail = () => {
     fetchNote()
   }, [id])
 
+  // Track audio playback and sync transcript
+  useEffect(() => {
+    if (!audioElement || !note?.timestamps) return
+
+    const handleTimeUpdate = () => {
+      const time = audioElement.currentTime
+      setCurrentTime(time)
+
+      // Find active segment
+      const activeIndex = note.timestamps.findIndex((seg, idx) => {
+        const nextSeg = note.timestamps[idx + 1]
+        return time >= seg.start && (!nextSeg || time < nextSeg.start)
+      })
+
+      setActiveSegmentIndex(prevIndex => {
+        if (activeIndex !== prevIndex) {
+          // Auto-scroll to active segment
+          if (activeIndex >= 0 && transcriptRefs.current[activeIndex]) {
+            transcriptRefs.current[activeIndex].scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            })
+          }
+          return activeIndex
+        }
+        return prevIndex
+      })
+    }
+
+    audioElement.addEventListener('timeupdate', handleTimeUpdate)
+    return () => audioElement.removeEventListener('timeupdate', handleTimeUpdate)
+  }, [note, audioElement])
+
+  // Remove Learning Objectives section from markdown if it exists in metadata
+  const cleanMarkdown = (markdown) => {
+    if (!markdown) return ''
+    if (note && note.learning_objectives && note.learning_objectives.length > 0) {
+      return markdown.replace(/##\s*(?:📋\s*)?Learning Objectives[\s\S]*?(?=##|$)/i, '')
+    }
+    return markdown
+  }
+
   // Convert markdown to HTML when entering edit mode
   const handleEdit = () => {
     if (note.is_markdown && note.html) {
+      const cleaned = cleanMarkdown(note.html)
       // Render markdown to HTML string
       try {
         const htmlString = renderToString(
@@ -56,14 +130,14 @@ const LectureDetail = () => {
             remarkPlugins={[remarkMath]}
             rehypePlugins={[rehypeKatex]}
           >
-            {note.html}
+            {cleaned}
           </ReactMarkdown>
         )
         setEditContent(htmlString)
       } catch (err) {
         console.error('Failed to convert markdown:', err)
         // Fallback to raw content
-        setEditContent(note.html)
+        setEditContent(cleaned)
       }
     } else {
       setEditContent(note.html || '')
@@ -91,10 +165,10 @@ const LectureDetail = () => {
   }
 
   const seekToTimestamp = (time) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = time
-      audioRef.current.play()
-      audioRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (audioElement) {
+      audioElement.currentTime = time
+      audioElement.play()
+      audioElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }
 
@@ -105,18 +179,57 @@ const LectureDetail = () => {
     const headers = []
     lines.forEach((line, idx) => {
       if (line.trim().startsWith('##') && !line.trim().startsWith('###')) {
+        // Extract timestamp if present: [▶ MM:SS](#123)
+        const timeMatch = line.match(/\[▶\s*(\d+:\d+)\]\(#(\d+(?:\.\d+)?)\)/)
+        const timestamp = timeMatch ? { label: timeMatch[1], time: parseFloat(timeMatch[2]) } : null
+
         const title = line.replace(/^##\s*/, '').replace(/\[▶.*?\]\(.*?\)/, '').trim()
-        headers.push({ title, lineIndex: idx })
+
+        // Skip Learning Objectives in TOC
+        if (!title.toLowerCase().includes('learning objectives')) {
+          headers.push({ title, lineIndex: idx, timestamp })
+        }
       }
     })
     return headers
+  }
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  const findBestTimestamp = (text) => {
+    if (!note.timestamps || note.timestamps.length === 0) return null
+    if (!text || text.length < 10) return null
+
+    const searchWords = text.toLowerCase().split(/\s+/).filter(w => w.length > 4)
+    if (searchWords.length === 0) return null
+
+    let bestScore = 0
+    let bestTime = null
+
+    for (const ts of note.timestamps) {
+      const tsText = ts.text.toLowerCase()
+      let score = 0
+      for (const w of searchWords) {
+        if (tsText.includes(w)) score++
+      }
+      if (score > bestScore) {
+        bestScore = score
+        bestTime = ts.start
+      }
+    }
+    return bestScore >= 1 ? bestTime : null
   }
 
   if (loading) return <div className="lectures-loading">Loading lecture...</div>
   if (error) return <div className="lectures-loading">Error: {error}</div>
   if (!note) return <div className="lectures-loading">Lecture not found</div>
 
-  const headers = extractHeaders(note.html)
+  const cleanedMarkdown = cleanMarkdown(note.html)
+  const headers = extractHeaders(cleanedMarkdown)
 
   return (
     <div className="lecture-detail-page">
@@ -155,8 +268,19 @@ const LectureDetail = () => {
           {showTOC && (
             <ul className="toc-list">
               {headers.map((header, idx) => (
-                <li key={idx}>
+                <li key={idx} className="toc-item">
                   <a href={`#section-${idx}`}>{header.title}</a>
+                  {header.timestamp && (
+                    <span
+                      className="toc-timestamp"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        seekToTimestamp(header.timestamp.time)
+                      }}
+                    >
+                      {header.timestamp.label}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -227,7 +351,7 @@ const LectureDetail = () => {
                 rehypePlugins={[rehypeKatex]}
                 components={{
                   img: ({ node, ...props }) => (
-                    <img {...props} className="inline-lecture-image" loading="lazy" />
+                    <ImageWithLoader {...props} />
                   ),
                   h2: ({ node, children, ...props }) => {
                     const text = String(children)
@@ -271,7 +395,19 @@ const LectureDetail = () => {
                     )
 
                     if (hasQMarker) {
-                      return <p className="flashcard-question" {...props}>{children}</p>
+                      const ts = findBestTimestamp(text.replace('Q:', '').trim())
+                      return (
+                        <div className="flashcard-question-wrapper">
+                          <p className="flashcard-question" {...props}>
+                            {children}
+                          </p>
+                          {ts && (
+                            <span className="flashcard-timestamp" onClick={() => seekToTimestamp(ts)}>
+                              {formatTime(ts)}
+                            </span>
+                          )}
+                        </div>
+                      )
                     }
                     if (hasAMarker) {
                       return <p className="flashcard-answer" {...props}>{children}</p>
@@ -305,7 +441,7 @@ const LectureDetail = () => {
                     )
                 }}
               >
-                {note.html}
+                {cleanedMarkdown}
               </ReactMarkdown>
             ) : (
               <div dangerouslySetInnerHTML={{ __html: note.html }} />
@@ -314,16 +450,46 @@ const LectureDetail = () => {
         )}
       </div>
 
-      {note.audio_url && (
-        <div className="lecture-section">
-          <h2>🎙️ Recording</h2>
-          <audio ref={audioRef} controls src={note.audio_url} className="lecture-audio">
-            Your browser does not support the audio element.
-          </audio>
-          <p className="audio-filename">{note.audio_url.split('/').pop()}</p>
-        </div>
-      )}
-    </div>
+      {/* Raw Transcript View */}
+      {
+        note.timestamps && note.timestamps.length > 0 && (
+          <div className="lecture-section transcript-section">
+            <h2 className="transcript-header">📜 Transcript</h2>
+            <div className="transcript-container">
+              <div className="transcript-timeline">
+                {note.timestamps.map((seg, idx) => (
+                  <div
+                    key={idx}
+                    ref={el => transcriptRefs.current[idx] = el}
+                    className={`transcript-block ${idx === activeSegmentIndex ? 'active' : ''}`}
+                    onClick={() => seekToTimestamp(seg.start)}
+                    title="Click to jump to this timestamp"
+                  >
+                    <div className="timeline-dot"></div>
+                    <div className="transcript-content">
+                      <span className="transcript-time">{formatTime(seg.start)}</span>
+                      <p className="transcript-text">{seg.text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {
+        note.audio_url && (
+          <div className="lecture-section">
+            <h2>🎙️ Recording</h2>
+            <audio ref={setAudioElement} controls src={note.audio_url} className="lecture-audio">
+              Your browser does not support the audio element.
+            </audio>
+            <p className="audio-filename">{note.audio_url.split('/').pop()}</p>
+          </div>
+        )
+      }
+    </div >
   )
 }
 

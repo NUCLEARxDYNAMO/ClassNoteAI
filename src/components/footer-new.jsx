@@ -15,11 +15,11 @@ const Footer = () => {
             <a href="https://github.com/NUCLEARxDYNAMO/ClassNoteAI" target="_blank" rel="noreferrer" aria-label="GitHub">
               <span className="material-icons">code</span>
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-              <span className="material-icons">business</span>
+            <a href="mailto:contact@classnoteai.edu" aria-label="Email">
+              <span className="material-icons">email</span>
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter">
-              <span className="material-icons">share</span>
+            <a href="https://github.com/NUCLEARxDYNAMO/ClassNoteAI#readme" target="_blank" rel="noreferrer" aria-label="Documentation">
+              <span className="material-icons">description</span>
             </a>
           </div>
         </div>

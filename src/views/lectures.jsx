@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useHistory } from 'react-router-dom'
+import ESP32Recorder from '../components/esp32-recorder'
+import { useUpload } from '../contexts/upload-context'
 import './lectures.css'
 
 const Lectures = () => {
   const history = useHistory()
+  const { uploads, addUpload, updateUpload } = useUpload()
   const [lectures, setLectures] = useState([])
   const [loading, setLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showESP32Modal, setShowESP32Modal] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
   const [deleteConfirm, setDeleteConfirm] = useState(null)
@@ -113,13 +117,22 @@ const Lectures = () => {
 
       <div className="lectures-container">
         <div className="lectures-actions">
-          <button
-            className="btn btn-primary btn-lg button-ripple"
-            onClick={() => setShowAddModal(true)}
-          >
-            <span className="material-icons">add</span>
-            New Lecture
-          </button>
+          <div className="recording-source-selector">
+            <button
+              className="btn btn-primary btn-lg button-ripple"
+              onClick={() => setShowAddModal(true)}
+            >
+              <span className="material-icons">upload_file</span>
+              Upload Audio File
+            </button>
+            <button
+              className="btn btn-outline btn-lg button-ripple esp32-option"
+              onClick={() => setShowESP32Modal(true)}
+            >
+              <span className="material-icons">sensors</span>
+              Record from ESP32
+            </button>
+          </div>
         </div>
 
         {loading ? (
@@ -219,6 +232,15 @@ const Lectures = () => {
           </div>
         </div>
       )}
+      {/* ESP32 Recorder Modal */}
+      <ESP32Recorder
+        isOpen={showESP32Modal}
+        onClose={() => setShowESP32Modal(false)}
+        onSuccess={() => {
+          // Recorder handles navigation and progress internally
+          setShowESP32Modal(false)
+        }}
+      />
     </div>
   )
 }

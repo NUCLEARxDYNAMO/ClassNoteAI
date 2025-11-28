@@ -56,18 +56,18 @@
 
 /* Learning Objectives */
 .learning-objectives {
-  background: var(--color-secondary-container);
+  background: var(--color-surface-container);
   padding: var(--spacing-xl);
   border-radius: var(--border-radius-xl);
   margin-bottom: var(--spacing-2xl);
-  border: 1px solid var(--color-outline-variant);
+  border: 1px dashed var(--color-outline-variant);
   box-shadow: var(--shadow-level-1);
 }
 
 .learning-objectives h3 {
   font-size: var(--font-size-title-lg);
   font-weight: 500;
-  color: var(--color-on-secondary-container);
+  color: var(--color-on-surface);
   margin: 0 0 var(--spacing-md) 0;
 }
 
@@ -81,7 +81,7 @@
   margin-bottom: var(--spacing-md);
   padding-left: var(--spacing-md);
   position: relative;
-  color: var(--color-on-secondary-container);
+  color: var(--color-on-surface-variant);
   line-height: 1.6;
   font-size: var(--font-size-body-lg);
 }
@@ -346,11 +346,10 @@ audio {
 
   .lecture-detail-header h1 {
     font-size: var(--font-size-headline-lg);
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
   }
-
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-lg);
 }
 
 .btn-edit,
@@ -541,20 +540,6 @@ audio {
   align-items: center;
   justify-content: center;
   width: 24px;
-  height: 24px;
-  border-radius: var(--border-radius-sm);
-  font-size: 0.85em;
-  font-weight: 700;
-  margin-right: var(--spacing-sm);
-  vertical-align: middle;
-  line-height: 1;
-  flex-shrink: 0;
-  /* Prevent marker from shrinking */
-}
-
-.marker-q {
-  background: var(--color-primary-container);
-  color: var(--color-on-primary-container);
 }
 
 .marker-a {

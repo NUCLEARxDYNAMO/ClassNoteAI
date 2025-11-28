@@ -1,24 +1,31 @@
-:root {
-  /* Material 3 Rose Dark Theme Palette - Enhanced Vibrancy */
-  --color-primary: #FFD9E3;
-  /* Rose 80 */
-  --color-on-primary: #3E001D;
-  /* Rose 20 */
-  --color-primary-container: #7B1E40;
-  /* Rose 40 - More vibrant than Rose 30 */
-  --color-on-primary-container: #FFD9E3;
-  /* Rose 90 */
+/* Product Sans Font */
+@font-face {
+  font-family: 'Product Sans';
+  src: url('/fonts/Product Sans Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
-  --color-secondary: #E5BDBE;
-  --color-on-secondary: #44292A;
-  --color-secondary-container: #734B4C;
-  /* Enhanced vibrancy */
-  --color-on-secondary-container: #FFD9E3;
+:root {
+  /* Material 3 Rose Dark Theme Palette - High Contrast */
+  --color-primary: #FFB1C8;
+  /* Bright Rose */
+  --color-on-primary: #650033;
+  /* Dark Rose */
+  --color-primary-container: #8E004B;
+  /* Deep Rose */
+  --color-on-primary-container: #FFD9E2;
+  /* Pale Rose */
+
+  --color-secondary: #E6BDC2;
+  --color-on-secondary: #44292D;
+  --color-secondary-container: #5D3F43;
+  --color-on-secondary-container: #FFD9DE;
 
   --color-tertiary: #EFB8C8;
   --color-on-tertiary: #492532;
-  --color-tertiary-container: #7D4856;
-  /* Enhanced vibrancy */
+  --color-tertiary-container: #633B48;
   --color-on-tertiary-container: #FFD8E4;
 
   --color-error: #FFB4AB;
@@ -26,28 +33,26 @@
   --color-error-container: #93000A;
   --color-on-error-container: #FFDAD6;
 
-  --color-surface: #1A1114;
-  /* Rose-tinted dark */
-  --color-on-surface: #F0DEE2;
-  --color-surface-variant: #524347;
-  --color-on-surface-variant: #D7C1C6;
+  --color-surface: #100B0D;
+  /* Very Dark Rose-Black */
+  --color-on-surface: #F6E0E4;
+  /* Very Light Rose-White */
+  --color-surface-variant: #534347;
+  --color-on-surface-variant: #D8C1C6;
 
   --color-outline: #A08C91;
-  --color-outline-variant: #524347;
+  --color-outline-variant: #534347;
 
-  /* Surface Tones for Elevation - Slightly lighter for better separation */
-  --color-surface-container-lowest: #140C0E;
-  --color-surface-container-low: #22191C;
-  --color-surface-container: #2A1D21;
-  /* Slightly lighter */
-  --color-surface-container-high: #35282D;
-  /* Slightly lighter */
-  --color-surface-container-highest: #403338;
-  /* Slightly lighter */
+  /* Surface Tones for Elevation - High Contrast Separation */
+  --color-surface-container-lowest: #0B0608;
+  --color-surface-container-low: #191114;
+  --color-surface-container: #1D1518;
+  --color-surface-container-high: #281F22;
+  --color-surface-container-highest: #332A2D;
 
   /* Typography - Material 3 Expressive */
-  --font-family-display: 'Roboto', sans-serif;
-  --font-family-body: 'Roboto', sans-serif;
+  --font-family-display: 'Product Sans' !important;
+  --font-family-body: 'Product Sans' !important;
 
   --font-size-display-lg: 57px;
   --font-size-display-md: 45px;
